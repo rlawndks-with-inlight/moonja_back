@@ -1,7 +1,7 @@
 'use strict';
 import db, { pool } from "../config/db.js";
 import { checkIsManagerUrl, returnMoment } from "../utils.js/function.js";
-import { insertQuery, updateQuery } from "../utils.js/query-util.js";
+import { insertQuery, selectQuerySimple, updateQuery } from "../utils.js/query-util.js";
 import { createHashedPassword, checkLevel, makeUserToken, response, checkDns, lowLevelException, settingFiles } from "../utils.js/util.js";
 import 'dotenv/config';
 
@@ -192,7 +192,7 @@ const authCtrl = {
             let id = decode_user?.id;
             let { user_pw } = req.body;
 
-            let user = await selectQuerySimple(table_name, id);
+            let user = await selectQuerySimple('users', id);
             user = user?.result[0];
 
             let pw_data = await createHashedPassword(user_pw);
@@ -201,7 +201,7 @@ const authCtrl = {
             let obj = {
                 user_pw, user_salt
             }
-            let result = await updateQuery(`${table_name}`, obj, id);
+            let result = await updateQuery(`users`, obj, id);
             return response(req, res, 100, "success", {})
         } catch (err) {
             console.log(err)
