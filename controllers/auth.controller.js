@@ -135,6 +135,8 @@ const authCtrl = {
                 return lowLevelException(req, res);
             }
             let requestIp = getReqIp(req);
+            console.log(requestIp)
+
             if (decode_user?.level >= 50) {
                 let developer_ip_list = [
                     '183.107.112.147',
