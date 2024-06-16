@@ -253,3 +253,14 @@ export const makeUserChildrenList = (user_list_ = [], decode_user) => {// 자기
     }
     return result;
 }
+
+export const getReqIp = (req) => {
+    let requestIp;
+    try {
+        requestIp = (req.headers['x-forwarded-for'] ?? "").split(',')[0] || req.connection.remoteAddress || req.ip || '0.0.0.0'
+    } catch (err) {
+        requestIp = '0.0.0.0'
+    }
+    requestIp = requestIp.replaceAll('::ffff:', '');
+    return requestIp;
+}

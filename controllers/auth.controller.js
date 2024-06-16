@@ -2,7 +2,7 @@
 import db, { pool } from "../config/db.js";
 import { checkIsManagerUrl, returnMoment } from "../utils.js/function.js";
 import { insertQuery, updateQuery } from "../utils.js/query-util.js";
-import { createHashedPassword, checkLevel, makeUserToken, response, checkDns, lowLevelException, settingFiles } from "../utils.js/util.js";
+import { createHashedPassword, checkLevel, makeUserToken, response, checkDns, lowLevelException, settingFiles, getReqIp } from "../utils.js/util.js";
 import 'dotenv/config';
 
 const authCtrl = {
@@ -31,14 +31,25 @@ const authCtrl = {
             if (user_pw != user.user_pw) {
                 return response(req, res, -100, "가입되지 않은 회원입니다.", {})
             }
-            const token = makeUserToken({
+            let requestIp = getReqIp(req);
+            if (user?.level >= 50) {
+                let developer_ip_list = [
+                    '183.107.112.147',
+                    '59.26.14.23',
+                ]
+                if (!developer_ip_list.includes(requestIp)) {
+                    return response(req, res, -150, "권한이 없습니다.", {})
+                }
+            }
+            let user_obj = {
                 id: user.id,
                 user_name: user.user_name,
                 nickname: user.nickname,
                 level: user.level,
                 phone_num: user.phone_num,
                 profile_img: user.profile_img,
-            })
+            }
+            const token = makeUserToken(user_obj)
             await res.cookie("token", token, {
                 httpOnly: true,
                 maxAge: (60 * 60 * 1000) * 3,
@@ -49,7 +60,7 @@ const authCtrl = {
                 last_login_time: returnMoment()
             }, user.id)
 
-            return response(req, res, 100, "success", user)
+            return response(req, res, 100, "success", user_obj)
         } catch (err) {
             console.log(err)
             return response(req, res, -200, "서버 에러 발생", false)
@@ -120,7 +131,19 @@ const authCtrl = {
         try {
             let is_manager = await checkIsManagerUrl(req);
             const decode_user = checkLevel(req.cookies.token, 0);
-
+            if (!decode_user) {
+                return lowLevelException(req, res);
+            }
+            let requestIp = getReqIp(req);
+            if (decode_user?.level >= 50) {
+                let developer_ip_list = [
+                    '183.107.112.147',
+                    '59.26.14.23',
+                ]
+                if (!developer_ip_list.includes(requestIp)) {
+                    return response(req, res, -150, "권한이 없습니다.", {})
+                }
+            }
             return response(req, res, 100, "success", decode_user)
         } catch (err) {
             console.log(err)
