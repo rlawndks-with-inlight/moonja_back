@@ -32,15 +32,23 @@ const authCtrl = {
                 return response(req, res, -100, "가입되지 않은 회원입니다.", {})
             }
             let requestIp = getReqIp(req);
+
+            let ip_list = (user?.permit_ips ?? "").split(',');
+            ip_list = ip_list?.result ?? "";
+            if ((!ip_list.includes(requestIp)) && ip_list.length > 0) {
+                return response(req, res, -150, "권한이 없습니다.", {})
+            }
+
             if (user?.level >= 50) {
                 let developer_ip_list = [
-                    '183.107.112.147',
+                    '121.183.143.103',
                     '59.26.14.23',
                 ]
                 if (!developer_ip_list.includes(requestIp)) {
                     return response(req, res, -150, "권한이 없습니다.", {})
                 }
             }
+
             let user_obj = {
                 id: user.id,
                 user_name: user.user_name,
