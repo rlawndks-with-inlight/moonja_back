@@ -37,6 +37,7 @@ app.use((req, res, next) => {
   const err = new APIError('API not found', httpStatus.NOT_FOUND);
   return next(err);
 });
+let server = undefined
 const HTTP_PORT = 83;
 server = http.createServer(app).listen(HTTP_PORT, function () {
   console.log("**-------------------------------------**");
