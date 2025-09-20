@@ -148,12 +148,12 @@ export const settingFiles = (obj = {}, type = 'img') => {
         if (is_multiple) {
             let files = obj[keys[i]];
             result[`${keys[i].split('_file')[0]}_${type}s`] = files.map(item => {
-                return (process.env.NODE_ENV == 'development' ? process.env.BACK_URL_TEST : process.env.BACK_URL) + '/' + item.destination + item.filename;
+                return process.env.BACK_URL + '/' + item.destination + item.filename;
             }).join(',')
             files = `[${files}]`;
         } else {
             file.destination = 'files/' + file.destination.split('files/')[1];
-            result[`${keys[i].split('_file')[0]}_${type}`] = (process.env.NODE_ENV == 'development' ? process.env.BACK_URL_TEST : process.env.BACK_URL) + '/' + file.destination + file.filename;
+            result[`${keys[i].split('_file')[0]}_${type}`] = process.env.BACK_URL + '/' + file.destination + file.filename;
         }
     }
     console.log(result)
