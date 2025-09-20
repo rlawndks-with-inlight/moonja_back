@@ -37,27 +37,10 @@ app.use((req, res, next) => {
   const err = new APIError('API not found', httpStatus.NOT_FOUND);
   return next(err);
 });
-let server = undefined
-const HTTP_PORT = 8001;
-const HTTPS_PORT = 8443;
-if (process.env.NODE_ENV == 'development') {
-  server = http.createServer(app).listen(HTTP_PORT, function () {
-    console.log("**-------------------------------------**");
-    console.log(`====      Server is On ${HTTP_PORT}...!!!    ====`);
-    console.log("**-------------------------------------**");
-    scheduleIndex();
-  });
-} else {
-  const options = { // letsencrypt로 받은 인증서 경로를 입력해 줍니다.
-    ca: fs.readFileSync("/etc/letsencrypt/live/purplevery25.cafe24.com/fullchain.pem"),
-    key: fs.readFileSync("/etc/letsencrypt/live/purplevery25.cafe24.com/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/live/purplevery25.cafe24.com/cert.pem")
-  };
-  server = https.createServer(options, app).listen(HTTPS_PORT, function () {
-    console.log("**-------------------------------------**");
-    console.log(`====      Server is On ${HTTPS_PORT}...!!!    ====`);
-    console.log("**-------------------------------------**");
-    scheduleIndex();
-  });
-
-}
+const HTTP_PORT = 83;
+server = http.createServer(app).listen(HTTP_PORT, function () {
+  console.log("**-------------------------------------**");
+  console.log(`====      Server is On ${HTTP_PORT}...!!!    ====`);
+  console.log("**-------------------------------------**");
+  scheduleIndex();
+});
